@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registre sua Presença</title>
+<style>
+  :root{
+    --azul-claro: #eaf4fc;
+    --azul-medio: #4a90c9;
+    --azul-escuro: #2e6da4;
+    --azul-texto: #1f3b57;
+    --branco: #ffffff;
+    --cinza: #6b8299;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    background: linear-gradient(180deg, var(--azul-claro) 0%, #d7e9f7 100%);
+    color: var(--azul-texto);
+    min-height: 100vh;
+    display:flex;
+    justify-content:center;
+    padding: 40px 16px;
+  }
+
+  .container{
+    width:100%;
+    max-width: 520px;
+  }
+
+  .card{
+    background: var(--branco);
+    border-radius: 16px;
+    padding: 32px 28px;
+    box-shadow: 0 10px 30px rgba(46,109,164,0.12);
+  }
+
+  .cabecalho{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .cabecalho img{
+    max-height: 78px;
+    max-width: 126px;
+    object-fit: contain;
+  }
+
+  h1{
+    font-size: 1.6rem;
+    text-align:center;
+    color: var(--azul-escuro);
+    margin: 0;
+  }
+
+  footer{
+    text-align:center;
+    margin-top: 28px;
+    font-size: 0.82rem;
+    color: var(--cinza);
+  }
+
+  h2{
+    font-size: 1.05rem;
+    color: var(--azul-escuro);
+    border-top: 1px solid #dceaf6;
+    padding-top: 20px;
+    margin: 28px 0 14px 0;
+  }
+
+  .card > h2:first-of-type{
+    border-top: none;
+    padding-top: 0;
+  }
+
+  label{
+    display:block;
+    font-size: 0.9rem;
+    margin: 14px 0 6px 0;
+    color: var(--azul-texto);
+  }
+
+  input[type="text"],
+  input[type="tel"],
+  select{
+    width:100%;
+    padding: 11px 12px;
+    border: 1px solid #bcd7ec;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: #fbfdff;
+    color: var(--azul-texto);
+  }
+
+  input:focus, select:focus{
+    outline: none;
+    border-color: var(--azul-medio);
+    box-shadow: 0 0 0 3px rgba(74,144,201,0.2);
+  }
+
+  .radio-group{
+    display:flex;
+    gap: 20px;
+    margin-top: 6px;
+  }
+
+  .radio-group label{
+    display:flex;
+    align-items:center;
+    gap: 6px;
+    margin: 0;
+    font-size: 0.95rem;
+    cursor:pointer;
+  }
+
+  .radio-group input{ width:auto; }
+
+  #familiaresContainer{
+    display:none;
+  }
+
+  #tituloFamiliares{
+    display:none;
+  }
+
+  .familiar-bloco{
+    background: #f4faff;
+    border: 1px solid #dceaf6;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+
+  .familiar-bloco label{
+    margin-top:0;
+  }
+
+  button[type="submit"]{
+    width:100%;
+    margin-top: 26px;
+    padding: 13px;
+    background: var(--azul-medio);
+    color: var(--branco);
+    border:none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight:600;
+    cursor:pointer;
+    transition: background 0.2s ease;
+  }
+
+  button[type="submit"]:hover{
+    background: var(--azul-escuro);
+  }
+
+  .mensagem{
+    text-align:center;
+    margin-top: 16px;
+    font-size: 0.92rem;
+    display:none;
+  }
+
+  .mensagem.sucesso{ color: #1f7a3d; }
+  .mensagem.erro{ color: #b23b3b; }
+
+  /* Botão administrador */
+  .admin-btn{
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    background: rgba(46,109,164,0.85);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(46,109,164,0.35);
+  }
+  .admin-btn:hover{ background: var(--azul-escuro); }
+
+  .modal-overlay{
+    display:none;
+    position: fixed;
+    inset:0;
+    background: rgba(31,59,87,0.45);
+    align-items:center;
+    justify-content:center;
+    z-index: 1000;
+    padding: 16px;
+  }
+
+  .modal-overlay.aberto{ display:flex; }
+
+  .modal{
+    background:#fff;
+    border-radius:14px;
+    padding: 26px;
+    width:100%;
+    max-width: 420px;
+    max-height: 85vh;
+    overflow-y:auto;
+  }
+
+  .modal h2{ border:none; padding:0; margin: 0 0 16px 0; }
+
+  .modal .fechar{
+    float:right;
+    cursor:pointer;
+    font-size:1.2rem;
+    color: var(--cinza);
+    background:none;
+    border:none;
+  }
+
+  .modal-erro{
+    color:#b23b3b;
+    font-size:0.85rem;
+    margin-top:8px;
+    display:none;
+  }
+
+  table{
+    width:100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin-top: 12px;
+  }
+
+  th, td{
+    border: 1px solid #dceaf6;
+    padding: 6px 8px;
+    text-align:left;
+  }
+
+  th{
+    background: var(--azul-claro);
+    color: var(--azul-escuro);
+  }
+
+  .admin-login button, .admin-painel button.acao{
+    width:100%;
+    padding: 11px;
+    background: var(--azul-medio);
+    color:#fff;
+    border:none;
+    border-radius: 8px;
+    cursor:pointer;
+    font-weight:600;
+  }
+
+  .admin-login button:hover, .admin-painel button.acao:hover{
+    background: var(--azul-escuro);
+  }
+
+  .admin-painel .carregando{
+    text-align:center;
+    color: var(--cinza);
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card">
+    <div class="cabecalho">
+      <img src="logo.png" alt="Logotipo" onerror="this.style.display='none'">
+      <h1>Registre sua Presença</h1>
+      <img src="logo2.png" alt="Logotipo" onerror="this.style.display='none'">
+    </div>
+
+    <form id="formPresenca">
+      <label for="nomeCompleto">Nome Completo *</label>
+      <input type="text" id="nomeCompleto" name="nomeCompleto" required>
+
+      <label for="telefone1">Telefone 1 *</label>
+      <input type="tel" id="telefone1" name="telefone1" required>
+
+      <label for="telefone2">Telefone 2</label>
+      <input type="tel" id="telefone2" name="telefone2">
+
+      <h2>Há mais membros da família?</h2>
+      <div class="radio-group">
+        <label><input type="radio" name="haFamilia" value="sim" required> Sim</label>
+        <label><input type="radio" name="haFamilia" value="nao" required> Não</label>
+      </div>
+
+      <div id="qtdContainer" style="display:none;">
+        <label for="qtdFamiliares">Quantos familiares irão acompanhar? *</label>
+        <select id="qtdFamiliares" name="qtdFamiliares">
+          <option value="">Selecione</option>
+          <!-- opções 1 a 10 geradas via JS -->
+        </select>
+      </div>
+
+      <h2 id="tituloFamiliares">Familiares que irão me acompanhar:</h2>
+      <div id="familiaresContainer"></div>
+
+      <button type="submit">Enviar</button>
+
+      <div class="mensagem sucesso" id="msgSucesso">Presença registrada com sucesso!</div>
+      <div class="mensagem erro" id="msgErro">Não foi possível enviar. Tente novamente.</div>
+    </form>
+  </div>
+
+  <footer>
+    André Web Solutions<br>
+    14 991482607
+  </footer>
+</div>
+
+<!-- Botão administrador -->
+<button class="admin-btn" id="btnAdmin" title="Administrador">⚙</button>
+
+<!-- Modal de login administrador -->
+<div class="modal-overlay" id="overlayLogin">
+  <div class="modal admin-login">
+    <button class="fechar" id="fecharLogin">×</button>
+    <h2>Acesso do Administrador</h2>
+    <label for="adminUser">Usuário</label>
+    <input type="text" id="adminUser">
+    <label for="adminPass">Senha</label>
+    <input type="password" id="adminPass">
+    <div style="margin-top:16px;">
+      <button id="btnEntrar">Entrar</button>
+    </div>
+    <div class="modal-erro" id="loginErro">Usuário ou senha incorretos.</div>
+  </div>
+</div>
+
+<!-- Modal do painel administrador -->
+<div class="modal-overlay" id="overlayPainel">
+  <div class="modal admin-painel" style="max-width:700px;">
+    <button class="fechar" id="fecharPainel">×</button>
+    <h2>Dados Coletados</h2>
+    <button class="acao" id="btnAtualizar">Atualizar dados</button>
+    <div id="areaDados">
+      <p class="carregando">Faça login para carregar os dados.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   CONFIGURAÇÃO — será preenchida nas próximas etapas
+   ========================================================== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwGotP4-4qsjt-zpjT71nU1Z6d_n6S3aIzBC0Xhy8Xyw8nYufxZIwPJk8Utia_xwp6-/exec";
+
+// Credenciais do administrador
+// Usuário padrão: admin | Senha padrão: admin123
+// (troque depois — instruções serão fornecidas)
+const ADMIN_USER = "admin";
+const ADMIN_PASS_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9";
+
+/* ========================= FORMULÁRIO ========================= */
+const radiosFamilia = document.querySelectorAll('input[name="haFamilia"]');
+const qtdContainer = document.getElementById('qtdContainer');
+const qtdSelect = document.getElementById('qtdFamiliares');
+const tituloFamiliares = document.getElementById('tituloFamiliares');
+const familiaresContainer = document.getElementById('familiaresContainer');
+
+// Preenche o select de 1 a 10
+for(let i=1; i<=10; i++){
+  const opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = i;
+  qtdSelect.appendChild(opt);
+}
+
+radiosFamilia.forEach(radio=>{
+  radio.addEventListener('change', ()=>{
+    if(radio.value === 'sim' && radio.checked){
+      qtdContainer.style.display = 'block';
+      qtdSelect.required = true;
+    } else if(radio.value === 'nao' && radio.checked){
+      qtdContainer.style.display = 'none';
+      qtdSelect.required = false;
+      qtdSelect.value = '';
+      limparFamiliares();
+    }
+  });
+});
+
+qtdSelect.addEventListener('change', ()=>{
+  gerarCamposFamiliares(parseInt(qtdSelect.value) || 0);
+});
+
+function limparFamiliares(){
+  familiaresContainer.innerHTML = '';
+  familiaresContainer.style.display = 'none';
+  tituloFamiliares.style.display = 'none';
+}
+
+function gerarCamposFamiliares(qtd){
+  familiaresContainer.innerHTML = '';
+  if(qtd > 0){
+    tituloFamiliares.style.display = 'block';
+    familiaresContainer.style.display = 'block';
+    for(let i=1; i<=qtd; i++){
+      const bloco = document.createElement('div');
+      bloco.className = 'familiar-bloco';
+      bloco.innerHTML = `
+        <label for="familiar${i}">Nome Completo do familiar ${i} *</label>
+        <input type="text" id="familiar${i}" name="familiar${i}" required>
+      `;
+      familiaresContainer.appendChild(bloco);
+    }
+  } else {
+    tituloFamiliares.style.display = 'none';
+    familiaresContainer.style.display = 'none';
+  }
+}
+
+document.getElementById('formPresenca').addEventListener('submit', async function(e){
+  e.preventDefault();
+
+  const msgSucesso = document.getElementById('msgSucesso');
+  const msgErro = document.getElementById('msgErro');
+  msgSucesso.style.display = 'none';
+  msgErro.style.display = 'none';
+
+  const dados = {
+    nomeCompleto: document.getElementById('nomeCompleto').value,
+    telefone1: document.getElementById('telefone1').value,
+    telefone2: document.getElementById('telefone2').value,
+    haFamilia: document.querySelector('input[name="haFamilia"]:checked')?.value || '',
+    familiares: []
+  };
+
+  const qtd = parseInt(qtdSelect.value) || 0;
+  for(let i=1; i<=qtd; i++){
+    dados.familiares.push(document.getElementById('familiar'+i).value);
+  }
+
+  try{
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(dados)
+    });
+    msgSucesso.style.display = 'block';
+    this.reset();
+    limparFamiliares();
+    qtdContainer.style.display = 'none';
+  } catch(err){
+    msgErro.style.display = 'block';
+  }
+});
+
+/* ========================= ADMINISTRADOR ========================= */
+async function sha256(texto){
+  const buffer = new TextEncoder().encode(texto);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+  return Array.from(new Uint8Array(hashBuffer)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+const overlayLogin = document.getElementById('overlayLogin');
+const overlayPainel = document.getElementById('overlayPainel');
+
+document.getElementById('btnAdmin').addEventListener('click', ()=>{
+  overlayLogin.classList.add('aberto');
+});
+document.getElementById('fecharLogin').addEventListener('click', ()=>{
+  overlayLogin.classList.remove('aberto');
+});
+document.getElementById('fecharPainel').addEventListener('click', ()=>{
+  overlayPainel.classList.remove('aberto');
+});
+
+document.getElementById('btnEntrar').addEventListener('click', async ()=>{
+  const usuario = document.getElementById('adminUser').value;
+  const senha = document.getElementById('adminPass').value;
+  const loginErro = document.getElementById('loginErro');
+
+  const senhaHash = await sha256(senha);
+
+  if(usuario === ADMIN_USER && senhaHash === ADMIN_PASS_HASH){
+    loginErro.style.display = 'none';
+    overlayLogin.classList.remove('aberto');
+    overlayPainel.classList.add('aberto');
+    carregarDados();
+  } else {
+    loginErro.style.display = 'block';
+  }
+});
+
+document.getElementById('btnAtualizar').addEventListener('click', carregarDados);
+
+async function carregarDados(){
+  const area = document.getElementById('areaDados');
+  area.innerHTML = '<p class="carregando">Carregando dados...</p>';
+  try{
+    const resposta = await fetch(SCRIPT_URL);
+    const json = await resposta.json();
+    montarTabela(json);
+  } catch(err){
+    area.innerHTML = '<p class="carregando">Não foi possível carregar os dados. Verifique a URL do Apps Script.</p>';
+  }
+}
+
+function montarTabela(linhas){
+  const area = document.getElementById('areaDados');
+  if(!linhas || linhas.length === 0){
+    area.innerHTML = '<p class="carregando">Nenhum registro encontrado.</p>';
+    return;
+  }
+  const colunas = Object.keys(linhas[0]);
+  let html = '<table><thead><tr>';
+  colunas.forEach(c=> html += `<th>${c}</th>`);
+  html += '</tr></thead><tbody>';
+  linhas.forEach(linha=>{
+    html += '<tr>';
+    colunas.forEach(c=> html += `<td>${linha[c] ?? ''}</td>`);
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  area.innerHTML = html;
+}
+</script>
+
+</body>
+</html>
